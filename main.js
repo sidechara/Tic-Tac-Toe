@@ -3,6 +3,7 @@ var turn = 0;
 var score1 = 0;
 var score2 = 0;
 var gameEnd = 0;
+var playerMode = 0;
 
 function displayPlayer(mode) {
     var display = document.getElementById("display-player");
@@ -29,9 +30,13 @@ function makeMove(num, num_int) {
         square.innerHTML = "X";
         board[num_int-1] = 0;
         turn = 1;
-        let aiMoveIndex = findBestMove(board);
-        if (aiMoveIndex != -1) {
-            makeMove(String(aiMoveIndex + 1), aiMoveIndex + 1);
+        if (playerMode) {
+            setTimeout(function() {
+                let aiMoveIndex = findBestMove(board);
+                if (aiMoveIndex != -1) {
+                    makeMove(String(aiMoveIndex + 1), aiMoveIndex + 1);
+                }
+            }, 1000);
         }
     } else {
         square.innerHTML = "O";
@@ -45,6 +50,14 @@ function makeMove(num, num_int) {
         displayPlayer(3)
     } else {
         displayPlayer(0);
+    }
+}
+
+function setPlayerMode() {
+    if (document.getElementById("ai").checked) {
+        playerMode = 1;
+    } else {
+        playerMode = 0;
     }
 }
 function evaluateBoard(b) {
@@ -132,8 +145,8 @@ function minimax(b, depth, isMax) {
 function displayScores() {
     var x = document.getElementById("score_x");
     var o = document.getElementById("score_o");
-    x.innerHTML = score1/2; // Bug where score increases by two for each win, so divide by 2 to get actual wins
-    o.innerHTML = score2/2;
+    x.innerHTML = score1;
+    o.innerHTML = score2;
 }
 
 function checkWin() {
