@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dino Maze - H Challenge</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<h1> Ice Challenge (Karel Style)</h1>
+
+<p>
+Goal: Collect all the ice cream cones in the shape of H and return to starting position.
+</p>
+
+<div id="compass">Direction: ⬆️ Up</div>
+<div class="controls">
+  <button onclick="move()">Move</button>
+  <button onclick="turnLeft()">Turn Left</button>
+</div>
+
+<p>Score: <span id="score">0</span></p>
+
+<div id="maze"></div>
+
+<h2>AI Mode</h2>
+<button onclick="runAI()">Run AI</button>
+
+<script src="script.js"></script>
+</body>
+</html>

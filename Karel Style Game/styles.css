@@ -1,0 +1,35 @@
+body {
+  font-family: Arial;
+  text-align: center;
+}
+
+#maze {
+  display: grid;
+  
+  grid-template-columns: repeat(var(--cols), 60px);
+
+  gap: 5px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.cell {
+  width: 60px;
+  height: 60px;
+  border: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wall {
+  background-color: black;
+}
+
+.player {
+  background-color: lightblue;
+}
+
+.dino {
+  font-size: 22px;
+}
