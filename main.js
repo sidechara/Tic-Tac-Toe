@@ -29,6 +29,10 @@ function makeMove(num, num_int) {
         square.innerHTML = "X";
         board[num_int-1] = 0;
         turn = 1;
+        let aiMoveIndex = findBestMove(board);
+        if (aiMoveIndex != -1) {
+            makeMove(String(aiMoveIndex + 1), aiMoveIndex + 1);
+        }
     } else {
         square.innerHTML = "O";
         board[num_int-1] = 1;
@@ -43,12 +47,93 @@ function makeMove(num, num_int) {
         displayPlayer(0);
     }
 }
+function evaluateBoard(b) {
+    // Check rows for a win
+    for (let i = 0; i < 3; i++) {
+        if (b[i*3] !== -1 && b[i*3] == b[i*3+1] && b[i*3+1] == b[i*3+2]) {
+            return b[i*3] == 1 ? 10 : -10; // +10 for O (AI), -10 for X (Player)
+        }
+    }
+    // Check columns for a win
+    for (let i = 0; i < 3; i++) {
+        if (b[i] != -1 && b[i] == b[i+3] && b[i+3] == b[i+6]) {
+            return b[i] == 1 ? 10 : -10;
+        }
+    }
+    // Check diagonals for a win
+    if (b[0] != -1 && b[0] == b[4] && b[4] == b[8]) {
+        return b[0] == 1 ? 10 : -10;
+    }
+    if (b[2] != -1 && b[2] == b[4] && b[4] == b[6]) {
+        return b[2] == 1 ? 10 : -10;
+    }
+    return 0; // No winner
+}
 
+function isMovesLeft(b) {
+    for (let i = 0; i < 9; i++) {
+        if (b[i] == -1) return true;
+    }
+    return false;
+}
+function findBestMove(b) {
+    let bestVal = -1000;
+    let bestMoveIndex = -1;
+
+    for (let i = 0; i < 9; i++) { // Runs through possibilities, 
+        if (b[i] == -1) {
+            b[i] = 1; 
+            let moveVal = minimax(b, 0, false);
+            b[i] = -1; 
+
+            if (moveVal > bestVal) {
+                bestMoveIndex = i;
+                bestVal = moveVal;
+            }
+        }
+    }
+    return bestMoveIndex;
+}
+function minimax(b, depth, isMax) {
+    let score = evaluateBoard(b);
+
+    if (score == 10) return score - depth; // AI, faster wins favored
+    
+    // If Player (X) has won the game, return evaluated score
+    if (score == -10) return score + depth; // Player, delay loss favored
+    
+    if (!isMovesLeft(b)) return 0;
+
+    //AI Turn
+    if (isMax) {
+        let best = -1000;
+        for (let i = 0; i < 9; i++) {
+            if (b[i] == -1) {
+                b[i] = 1; // Make hypothetical AI move
+                best = Math.max(best, minimax(b, depth + 1, !isMax));
+                b[i] = -1; // Undo move!
+            }
+        }
+        return best;
+    } 
+    //Player turn 
+    else {
+        let best = 1000;
+        for (let i = 0; i < 9; i++) {
+            if (b[i] == -1) {
+                b[i] = 0; // Make hypothetical Player move
+                best = Math.min(best, minimax(b, depth + 1, !isMax));
+                b[i] = -1; // Undo move!
+            }
+        }
+        return best;
+    }
+}
 function displayScores() {
     var x = document.getElementById("score_x");
     var o = document.getElementById("score_o");
-    x.innerHTML = score1;
-    o.innerHTML = score2;
+    x.innerHTML = score1/2; // Bug where score increases by two for each win, so divide by 2 to get actual wins
+    o.innerHTML = score2/2;
 }
 
 function checkWin() {
@@ -81,7 +166,10 @@ function checkWin() {
         score2++;
         win = 2;
     }
-    if (win == 1 || win == 2) {
+    if (win == 1) {
+        displayScores();
+        gameEnd = 1;
+    } else if (win == 2) {
         displayScores();
         gameEnd = 1;
     }
@@ -129,3 +217,4 @@ function reset() {
     displayScores();
 
 }
+// The functions designed for the Minimaxer AI approach were largely inspired by the GeeksforGeeks article on the topic. 
